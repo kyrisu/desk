@@ -27,6 +27,8 @@ Usage:
         List all desks along with a description.
     $PROGRAM (.|go) desk-name
         Activate a desk.
+    $PROGRAM (e|edit) desk-name
+        Edit desk file in default editor
     $PROGRAM help
         Show this text.
     $PROGRAM version
@@ -76,6 +78,23 @@ cmd_go() {
         exit 1
     else
         DESK_NAME="${TODESK}" DESK_ENV="${DESKPATH}" $SHELL
+    fi
+}
+
+cmd_edit() {
+    if  [ -z "$1" ]
+    then
+      local DESKPATH=$DESK_ENV
+    else
+      local TODESK="$1"
+      local DESKPATH="$(find "${DESKS}/" -name "${TODESK}".sh)"
+    fi
+
+    if [ -z "$DESKPATH" ]; then 
+        echo "Desk" "$TODESK" "not found in" "$DESKS"
+        exit 1
+    else
+        $EDITOR $DESKPATH
     fi
 }
 
@@ -165,6 +184,7 @@ case "$1" in
     version|--version) shift;  cmd_version "$@" ;;
     ls|list) shift;            cmd_list "$@" ;;
     go|.) shift;               cmd_go "$@" ;;
+    edit|e) shift;             cmd_edit "$@" ;;
     *)                         cmd_current "$@" ;;
 esac
 exit 0
