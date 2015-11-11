@@ -77,6 +77,7 @@ cmd_init() {
       echo "test -n \"\$DESK_ENV\"; and . \"\$DESK_ENV\"" >> "$USER_SHELLRC"
     else
       echo "[ -n \"\$DESK_ENV\" ] && source \"\$DESK_ENV\"" >> "$USER_SHELLRC"
+      cat ./bash_completion.sh >> "$USER_SHELLRC"
     fi
     
     echo "Done. Start adding desks to ${NEW_PREFIX}/desks!"
