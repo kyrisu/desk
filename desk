@@ -4,6 +4,8 @@
 PREFIX="${DESK_DIR:-$HOME/.desk}"
 DESKS="${DESK_DESKS_DIR:-$PREFIX/desks}"
 
+TEMPLATE="template"
+
 
 ## Commands
 
@@ -96,20 +98,36 @@ cmd_go() {
 }
 
 cmd_edit() {
-    if  [ -z "$1" ]
-    then
-      local DESKPATH=$DESK_ENV
-    else
-      local TODESK="$1"
-      local DESKPATH="$(find "${DESKS}/" -name "${TODESK}".sh)"
+  if  [ -z "$1" ]; then
+    local DESKPATH=$DESK_ENV
+  else
+    local TODESK="$1"
+    local DESKEXT=$(get_deskfile_extension)
+    local DESKPATH="$(find "${DESKS}/" -name "${TODESK}${DESKEXT}")"
+
+    if [ -z $DESKPATH ]; then
+      DESKPATH="${DESKS}/${TODESK}${DESKEXT}"
+      read -p "Desk does not exist - do you want to create it? " -n 1 -r
+      echo
+      if [[ $REPLY =~ ^[Yy]$ ]]; then
+        local TMPLPATH="${DESKS}/${TEMPLATE}$(get_deskfile_extension)_"
+        if [ ! -f $TMPLPATH ]; then
+          cp -p $TMPLPATH $DESKPATH
+        else
+          touch $DESKPATH
+        fi
+      else
+        exit 1
+      fi
     fi
 
-    if [ -z "$DESKPATH" ]; then 
-        echo "Desk" "$TODESK" "not found in" "$DESKS"
-        exit 1
-    else
-        $EDITOR $DESKPATH
+    $EDITOR $DESKPATH
+
+    # if we are editing the current desk - reload desk config
+    if [ "${DESKPATH}" == "${DESK_ENV}" ]; then
+      . $DESKPATH
     fi
+  fi
 }
 
 
