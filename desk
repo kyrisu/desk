@@ -120,13 +120,13 @@ cmd_edit() {
         exit 1
       fi
     fi
+  fi
 
-    $EDITOR $DESKPATH
+  $EDITOR $DESKPATH
 
-    # if we are editing the current desk - reload desk config
-    if [ "${DESKPATH}" == "${DESK_ENV}" ]; then
-      . $DESKPATH
-    fi
+  # if we are editing the current desk - reload desk config
+  if [ "${DESKPATH}" == "${DESK_ENV}" ]; then
+    . $DESKPATH
   fi
 }
 
